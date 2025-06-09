@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Work Tracker – prosty tracker godzin pracy</title>
+  <meta name="description" content="Work Tracker to darmowy, prosty kalendarz do śledzenia godzin pracy i zarobków. Wszystko offline, dane tylko u Ciebie!">
+  <meta property="og:title" content="Work Tracker – prosty tracker godzin pracy">
+  <meta property="og:description" content="Śledź godziny pracy, notatki i zarobki w bezpieczny sposób. Wszystko offline, bez rejestracji!">
+  <meta property="og:image" content="favicon.svg">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <span class="header-icon" aria-label="Work Tracker">
+        <img src="favicon.svg" alt="Ikona Work Tracker" width="32" height="32" loading="lazy">
+      </span>
+      <span class="header-title">Work Tracker</span>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Ustawienia</h2>
+      <div class="settings-row">
+        <label for="hourlyRate">Stawka domyślna:</label>
+        <input type="number" id="hourlyRate" min="1" step="0.01" value="25" aria-label="Stawka godzinowa">
+
+        <label for="currency">Waluta:</label>
+        <select id="currency" aria-label="Waluta">
+          <option value="PLN">PLN</option>
+          <option value="EUR">EUR</option>
+          <option value="USD">USD</option>
+        </select>
+        <span id="currencyInfo"></span>
+      </div>
+      <div class="currency-converter" aria-label="Kalkulator walut">
+        <input type="number" id="ccAmount" value="100" min="0" step="0.01" aria-label="Kwota">
+        <select id="ccFrom" aria-label="Z waluty">
+          <option value="PLN">PLN</option>
+          <option value="EUR">EUR</option>
+          <option value="USD">USD</option>
+        </select>
+        <span>→</span>
+        <select id="ccTo" aria-label="Na walutę">
+          <option value="PLN">PLN</option>
+          <option value="EUR">EUR</option>
+          <option value="USD">USD</option>
+        </select>
+        <span id="ccResult">—</span>
+      </div>
+    </section>
+
+    <section id="calendarSection">
+      <div class="calendar-controls">
+        <label for="calendarYear">Rok:</label>
+        <select id="calendarYear"></select>
+        <label for="calendarMonth">Miesiąc:</label>
+        <select id="calendarMonth"></select>
+      </div>
+      <div id="calendar" aria-label="Kalendarz"></div>
+    </section>
+
+    <section>
+      <h2>Lista wpisów</h2>
+      <table id="workTable" aria-label="Lista wpisów">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Godziny</th>
+            <th>Stawka</th>
+            <th>Notatka</th>
+            <th>Zarobek</th>
+            <th>Opcje</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+      <div class="buttons">
+        <button id="exportBtn" aria-label="Eksportuj do CSV">Eksportuj CSV</button>
+      </div>
+    </section>
+
+    <section>
+      <h2>Podsumowanie</h2>
+      <div>
+        <label for="summaryPeriod">Okres:</label>
+        <select id="summaryPeriod" aria-label="Okres">
+          <option value="all">Całość</option>
+          <option value="month">Bieżący miesiąc</option>
+          <option value="week">Bieżący tydzień</option>
+        </select>
+      </div>
+      <div class="stat-tiles" id="statTiles"></div>
+      <div id="summary">
+        Godzin: <span id="totalHours">0</span> <br>
+        Zarobek: <span id="totalEarnings">0 PLN</span>
+      </div>
+    </section>
+  </main>
+
+  <div id="formSection" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="formDate">
+    <form id="workForm">
+      <div id="formDate" style="font-weight:700;margin-bottom:1em;">Data: </div>
+      <label>
+        Godziny:
+        <input type="number" id="hoursInput" min="0.1" step="0.01" required autocomplete="off" aria-label="Godziny">
+      </label>
+      <br>
+      <label>
+        Stawka (opcjonalnie):
+        <input type="number" id="rateInput" min="1" step="0.01" autocomplete="off" aria-label="Stawka za dzień">
+      </label>
+      <br>
+      <label>
+        Notatka:
+        <input type="text" id="noteInput" maxlength="64" autocomplete="off" aria-label="Notatka">
+      </label>
+      <div class="buttons">
+        <input type="submit" value="Zapisz">
+        <button type="button" id="cancelBtn">Anuluj</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="privacyModal" class="modal hidden" role="dialog" aria-modal="true" aria-label="Polityka prywatności">
+    <div style="background:#fff;padding:2em 1.5em;max-width:400px;border-radius:18px;box-shadow:0 2px 16px #0001;position:relative;">
+      <button onclick="document.getElementById('privacyModal').classList.add('hidden')" style="position:absolute;top:0.7em;right:0.9em;font-size:1.3em;background:none;border:none;cursor:pointer;">×</button>
+      <h3 style="margin-top:0;">Polityka prywatności</h3>
+      <p>
+        Work Tracker nie przesyła ani nie przechowuje Twoich danych na żadnym serwerze.<br>
+        Wszystkie wpisy, stawki i notatki zapisują się tylko w Twojej przeglądarce (localStorage).<br>
+        <b>Możesz w każdej chwili wyczyścić dane przez opcje przeglądarki.</b>
+      </p>
+    </div>
+  </div>
+
+  <footer>
+    <span style="opacity:0.7">© Work Tracker. Twoje dane są tylko u Ciebie.</span>
+    &nbsp;|&nbsp;
+    <a href="#" id="privacyLink" style="color:#2563eb; text-decoration:underline;cursor:pointer;">Polityka prywatności</a>
+  </footer>
+  <script src="script.js"></script>
+  <script>
+    document.getElementById('privacyLink').onclick = function(e){
+      e.preventDefault();
+      document.getElementById('privacyModal').classList.remove('hidden');
+    }
+  </script>
+</body>
+</html>
